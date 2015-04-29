@@ -1,13 +1,13 @@
 local torch = require 'torch'
 
 
-function test_network(mlp, dataset)
+function test_network(cnn, dataset)
 
   local nbr_elements = 0
   local nbr_false = 0
 
   for sample_index, sample in ipairs(dataset) do
-    score = mlp:forward(sample[1])
+    score = cnn:forward(sample[1])
 
     local max_values, max_indices = torch.max(score,2)
 
