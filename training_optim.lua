@@ -14,14 +14,35 @@ function train_network(cnn, dataset)
   for i=1,43 do classes[i] = i end
   confusion = optim.ConfusionMatrix(classes)
 
-  optimState = {
+  optimization_method = 'SGD'
+
+  local optimState
+  if optimization_method == 'CG' then
+    optimState = {
+      maxIter = 2
+    }
+    optimMethod = optim.cg
+
+  elseif optimization_method == 'LBFGS' then
+    optimState = {
+      learningRate = 0.01,
+      maxIter = 2,
+      nCorrection = 10
+    }
+    optimMethod = optim.lbfgs
+
+  elseif optimization_method == 'SGD' then
+    optimState = {
       learningRate = 0.01,
       weightDecay = 0,
       momentum = 0,
       learningRateDecay = 0
-  }
+    }
+    optimMethod = optim.sgd
+  end
+  
   nbr_epoch = 10
-  batch_size = 1
+  batch_size = 100
 
   cnn:training()
 
@@ -68,7 +89,7 @@ function train_network(cnn, dataset)
         return f, grad_parameters
       end
 
-      optim.sgd(feval, parameters, optimState)
+      optimMethod(feval, parameters, optimState)
     end
   end
 
