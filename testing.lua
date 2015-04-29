@@ -21,6 +21,6 @@ function test_network(mlp, dataset)
 
   end
 
-  print('Error rate on validation set is: ' .. nbr_false/nbr_elements .. '.')
+  print('Error rate on the given set is: ' .. nbr_false/nbr_elements .. '.')
 
 end

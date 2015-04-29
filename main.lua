@@ -6,10 +6,13 @@ require 'testing'
 local path = require 'pl.path'
 require 'torch'
 
-print('Reading dataset.')
-local train_dataset, val_dataset = get_dataset()
+print('Reading training dataset.')
+local train_dataset, val_dataset = get_dataset(false)
 print('Using ' .. train_dataset.nbr_elements .. ' training samples.')
 print('Using ' .. val_dataset.nbr_elements .. ' validation samples.')
+print('Reading testing dataset.')
+local test_dataset = get_dataset(true)
+print('Using ' .. test_dataset.nbr_elements .. ' testing samples.')
 
 local mlp
 
@@ -27,4 +30,4 @@ end
 
 
 print('Testing network.')
-test_network(mlp, val_dataset)
+test_network(mlp, test_dataset)

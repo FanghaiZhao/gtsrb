@@ -6,8 +6,10 @@ local utils = require 'pl.utils'
 require 'image'
 local torch = require 'torch'
 
--- returns train_dataset, val_dataset
-function get_dataset()
+-- prepare either the train or test dataset
+-- returns test_dataset               if test_set is true
+-- returns train_dataset, val_dataset if test_set is false
+function get_dataset(test_set)
   local train_dataset = {}
   train_dataset.nbr_elements = 0
   function train_dataset:size() return train_dataset.nbr_elements end
@@ -16,7 +18,17 @@ function get_dataset()
   val_dataset.nbr_elements = 0
   function val_dataset:size() return val_dataset.nbr_elements end
 
-  local parent_path = './GTSRB/Final_Training/Images'
+  local test_dataset = {}
+  test_dataset.nbr_elements = 0
+  function test_dataset:size() return test_dataset.nbr_elements end
+
+  local parent_path
+  if test_set then 
+    parent_path = './GTSRB/Final_Test/Images'
+  else
+    parent_path = './GTSRB/Final_Training/Images'
+  end
+
   local image_directories = dir.getdirectories(parent_path)
 
   for image_dir_nbr, image_directory in ipairs(image_directories) do
@@ -34,15 +46,22 @@ function get_dataset()
 
 
     -- first pass to detect number of tracks for this class
-    local max_track_nbr = 0
-    for image_index, image_metadata in ipairs(csv_content) do
-      local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
-      if track_nbr > max_track_nbr then
-        max_track_nbr = track_nbr
-      end
-    end
+    local track_for_validation
 
-    local track_for_validation = torch.floor(torch.rand(1)*max_track_nbr) + 1 
+    if test_set then
+      -- no validation when working on the test_set
+      track_for_validation = -1
+    else
+      local max_track_nbr = 0
+      for image_index, image_metadata in ipairs(csv_content) do
+        local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
+        if track_nbr > max_track_nbr then
+          max_track_nbr = track_nbr
+        end
+      end
+
+      track_for_validation = torch.floor(torch.rand(1)*max_track_nbr) + 1 
+    end
 
     for image_index, image_metadata in ipairs(csv_content) do
       local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
@@ -64,17 +83,26 @@ function get_dataset()
       local label = torch.Tensor(1)
       label[1] = image_metadata[class_id_index]+1
 
-      if track_nbr == track_for_validation[1] then
-        val_dataset.nbr_elements = val_dataset.nbr_elements + 1
-        val_dataset[val_dataset.nbr_elements] = {image_data, label}
+      if test_set then
+        test_dataset.nbr_elements = test_dataset.nbr_elements + 1
+        test_dataset[test_dataset.nbr_elements] = {image_data, label}
       else
-        train_dataset.nbr_elements = train_dataset.nbr_elements + 1
-        train_dataset[train_dataset.nbr_elements] = {image_data, label}
+        if track_nbr == track_for_validation[1] then
+          val_dataset.nbr_elements = val_dataset.nbr_elements + 1
+          val_dataset[val_dataset.nbr_elements] = {image_data, label}
+        else
+          train_dataset.nbr_elements = train_dataset.nbr_elements + 1
+          train_dataset[train_dataset.nbr_elements] = {image_data, label}
+        end
       end
 
     end
 
   end
 
-  return train_dataset, val_dataset
+  if test_set then
+    return test_dataset
+  else
+    return train_dataset, val_dataset
+  end
 end
