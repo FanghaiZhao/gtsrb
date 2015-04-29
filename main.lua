@@ -1,6 +1,6 @@
 require 'dataset'
 require 'network'
-require 'training'
+require 'training_optim'
 require 'testing'
 
 local path = require 'pl.path'
