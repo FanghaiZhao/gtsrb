@@ -15,7 +15,7 @@ if pathx.exists('train_dataset.bin') and pathx.exists('val_dataset.bin') then
   train_dataset = torch.load('train_dataset.bin')
   val_dataset = torch.load('val_dataset.bin')
 else
-  train_dataset, val_dataset = dataset.get_dataset(false, true)
+  train_dataset, val_dataset = dataset.get_dataset(false, false, true)
   torch.save('train_dataset.bin', train_dataset)
   torch.save('val_dataset.bin', val_dataset)
 end
@@ -28,7 +28,7 @@ if pathx.exists('test_dataset.bin') then
   print('Using existing test dataset.')
   test_dataset = torch.load('test_dataset.bin')
 else
-  test_dataset = dataset.get_dataset(true, false)
+  test_dataset = dataset.get_dataset(true, false, false)
   torch.save('test_dataset.bin', test_dataset)
 end
 print('Using ' .. test_dataset.nbr_elements .. ' testing samples.')
@@ -39,7 +39,7 @@ if pathx.exists('model.bin') then
   print('Using pretrained network.')
   cnn = torch.load('model.bin')
 else
-  cnn = network.get_network()
+  cnn = network.get_network_multiscale()
   print('Training network.')
   training.train_network(cnn, train_dataset)
 

@@ -7,9 +7,16 @@ require 'torch'
 require 'image'
 
 -- prepare either the train or test dataset
+-- generate or not the validation dataset
+-- perform jittering on train dataset or not (x5 size)
 -- returns test_dataset               if test_set is true
 -- returns train_dataset, val_dataset if test_set is false
-local get_dataset = function(test_set, use_jittering)
+local get_dataset = function(test_set, use_validation, use_jittering)
+  test_set = test_set or false
+  use_validation = use_validation or false
+  use_jittering = use_jittering or false
+
+
   local train_dataset = {}
   train_dataset.nbr_elements = 0
   function train_dataset:size() return train_dataset.nbr_elements end
@@ -48,7 +55,7 @@ local get_dataset = function(test_set, use_jittering)
     -- first pass to detect number of tracks for this class
     local track_for_validation
 
-    if test_set then
+    if test_set or not use_validation then
       -- no validation when working on the test_set
       track_for_validation = -1
     else
@@ -60,7 +67,7 @@ local get_dataset = function(test_set, use_jittering)
         end
       end
 
-      track_for_validation = torch.floor(torch.rand(1)*max_track_nbr) + 1 
+      track_for_validation = (torch.floor(torch.rand(1)*max_track_nbr) + 1)[1]
     end
 
     for image_index, image_metadata in ipairs(csv_content) do
@@ -88,7 +95,7 @@ local get_dataset = function(test_set, use_jittering)
         test_dataset.nbr_elements = test_dataset.nbr_elements + 1
         test_dataset[test_dataset.nbr_elements] = {image_data, label}
       else
-        if track_nbr == track_for_validation[1] then
+        if track_nbr == track_for_validation then
           val_dataset.nbr_elements = val_dataset.nbr_elements + 1
           val_dataset[val_dataset.nbr_elements] = {image_data, label}
         else
@@ -96,7 +103,7 @@ local get_dataset = function(test_set, use_jittering)
           train_dataset[train_dataset.nbr_elements] = {image_data, label}
 
           if use_jittering then
-            for i=1,5 do
+            for i=1,4 do
               local rand_angle = (torch.randn(1)*15*3.14/180)[1]
               local rand_scale = 1 -- TODO add random scaling
               local rand_position_x = (torch.randn(1)*2)[1]

@@ -47,7 +47,7 @@ local train_network = function(cnn, dataset)
   cnn:training()
 
   for epoch = 1, nbr_epoch do
-
+    collectgarbage()
     print('Doing epoch ' .. epoch .. ' with batch of size ' .. batch_size)
 
     shuffle = torch.randperm(dataset:size())
