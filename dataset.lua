@@ -9,7 +9,7 @@ local torch = require 'torch'
 -- prepare either the train or test dataset
 -- returns test_dataset               if test_set is true
 -- returns train_dataset, val_dataset if test_set is false
-function get_dataset(test_set)
+function get_dataset(test_set, use_jittering)
   local train_dataset = {}
   train_dataset.nbr_elements = 0
   function train_dataset:size() return train_dataset.nbr_elements end
@@ -67,6 +67,7 @@ function get_dataset(test_set)
       local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
       local image_path = path.join(image_directory, image_metadata[filename_index])
       local image_data = torch.Tensor(image.load(image_path, 3, double))
+      local original_image = image_data:clone()
 
       local x1 = image_metadata[x1_index]
       local x2 = image_metadata[x2_index]
@@ -93,11 +94,30 @@ function get_dataset(test_set)
         else
           train_dataset.nbr_elements = train_dataset.nbr_elements + 1
           train_dataset[train_dataset.nbr_elements] = {image_data, label}
+
+          if use_jittering then
+            for i=1,5 do
+              local rand_angle = (torch.randn(1)*15*3.14/180)[1]
+              local rand_scale = 1 -- TODO add random scaling
+              local rand_position_x = (torch.randn(1)*2)[1]
+              local rand_position_y = (torch.randn(1)*2)[1]
+              image_data = original_image:clone()
+
+              image_data = image.rotate(image_data, rand_angle)
+              image_data = image.translate(image_data, rand_position_x, rand_position_y)
+              image_data = image.crop(image_data, x1*rand_scale, y1*rand_scale, x2*rand_scale, y2*rand_scale)
+              image_data = image.scale(image_data, 32, 32)
+
+              train_dataset.nbr_elements = train_dataset.nbr_elements + 1
+              train_dataset[train_dataset.nbr_elements] = {jite, label}
+            end
+          end
         end
       end
-
+      if image_index % 3 == 0 then
+        collectgarbage()
+      end
     end
-
   end
 
   if test_set then

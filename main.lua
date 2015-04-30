@@ -15,7 +15,7 @@ if path.exists('train_dataset.bin') and path.exists('val_dataset.bin') then
   train_dataset = torch.load('train_dataset.bin')
   val_dataset = torch.load('val_dataset.bin')
 else
-  train_dataset, val_dataset = get_dataset(false)
+  train_dataset, val_dataset = get_dataset(false, true)
   torch.save('train_dataset.bin', train_dataset)
   torch.save('val_dataset.bin', val_dataset)
 end
@@ -28,7 +28,7 @@ if path.exists('test_dataset.bin') then
   print('Using existing test dataset.')
   test_dataset = torch.load('test_dataset.bin')
 else
-  test_dataset = get_dataset(true)
+  test_dataset = get_dataset(true, false)
   torch.save('test_dataset.bin', test_dataset)
 end
 print('Using ' .. test_dataset.nbr_elements .. ' testing samples.')
