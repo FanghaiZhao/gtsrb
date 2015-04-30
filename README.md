@@ -24,3 +24,60 @@ neural network able to classify German traffic sign images (43 classes):
 ### Testing
 
 `http://benchmark.ini.rub.de/Dataset/GTSRB_Final_Test_Images.zip` (84 MB)
+
+
+
+# Presentation of the solution
+
+## Modules
+
+The solution is separated in 5 modules:
+
+* dataset
+    * read the dataset
+    * perform the normalization
+    * perform jittering
+
+* network
+    * create the torch module representing the network
+
+* training or training_optim
+    * perform the training of a torch module using either nn.StochasticGradient or the torch.optim module
+
+* testing
+    * score the given torch module with the given dataset
+
+* main
+    * combine all the modules to perform the end to end training
+    * cache the datasets and results in .bin files.
+
+## Optimization module
+
+### nn.StochasticGradient
+
+This module is very easy to use and to train.
+It perform stockastic gradient descent.
+
+The following parameters can be changed:
+
+* learning rate
+* learning rate decay
+* number of epochs
+
+The following parameters cannot be changed:
+
+* batch size is 1
+* weight decay is 0
+* momentum is 0
+
+### torch.optim
+
+This module is a complete optimization module that contains other optimization than SGD. Here for example, we can use SGD, CG and LBFGS.
+
+All parameters can be changed by the user depending on the optimization method you want to use
+
+To be able to use this module, we linearize all the parameters and the gradient of the network into a set of parameters.
+We then create a function that, given a set of parameters  return the loss and its gradients on a batch of the images.
+The module is then doing the update of the parameters using one of the methods listed above.
+This step is repeated for all batches and the desired number of epochs.
+
