@@ -109,7 +109,7 @@ local get_dataset = function(test_set, use_jittering)
               image_data = image.scale(image_data, 32, 32)
 
               train_dataset.nbr_elements = train_dataset.nbr_elements + 1
-              train_dataset[train_dataset.nbr_elements] = {jite, label}
+              train_dataset[train_dataset.nbr_elements] = {image_data, label}
             end
           end
         end
