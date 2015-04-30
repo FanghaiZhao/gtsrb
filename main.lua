@@ -1,16 +1,16 @@
-require 'dataset'
-require 'network'
-require 'training_optim'
-require 'testing'
+local dataset = require 'dataset'
+local network = require 'network'
+local training_optim = require 'training_optim'
+local testing = require 'testing'
 
-local path = require 'pl.path'
+local pathx = require 'pl.path'
 require 'torch'
 
 print('Reading training dataset.')
 local train_dataset
 local val_dataset
 local test_dataset
-if path.exists('train_dataset.bin') and path.exists('val_dataset.bin') then
+if pathx.exists('train_dataset.bin') and pathx.exists('val_dataset.bin') then
   print('Using existing train and validation datasets.')
   train_dataset = torch.load('train_dataset.bin')
   val_dataset = torch.load('val_dataset.bin')
@@ -24,7 +24,7 @@ print('Using ' .. val_dataset.nbr_elements .. ' validation samples.')
 
 print('Reading testing dataset.')
 local test_dataset
-if path.exists('test_dataset.bin') then
+if pathx.exists('test_dataset.bin') then
   print('Using existing test dataset.')
   test_dataset = torch.load('test_dataset.bin')
 else
@@ -35,7 +35,7 @@ print('Using ' .. test_dataset.nbr_elements .. ' testing samples.')
 
 
 local cnn
-if path.exists('model.bin') then
+if pathx.exists('model.bin') then
   print('Using pretrained network.')
   cnn = torch.load('model.bin')
 else

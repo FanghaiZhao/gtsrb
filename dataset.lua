@@ -1,15 +1,15 @@
-local path = require 'pl.path'
-local dir = require 'pl.dir'
-local data = require 'pl.data'
-local utils = require 'pl.utils'
+local pathx = require 'pl.path'
+local dirx = require 'pl.dir'
+local datax = require 'pl.data'
+local utilsx = require 'pl.utils'
 
+require 'torch'
 require 'image'
-local torch = require 'torch'
 
 -- prepare either the train or test dataset
 -- returns test_dataset               if test_set is true
 -- returns train_dataset, val_dataset if test_set is false
-function get_dataset(test_set, use_jittering)
+local get_dataset = function(test_set, use_jittering)
   local train_dataset = {}
   train_dataset.nbr_elements = 0
   function train_dataset:size() return train_dataset.nbr_elements end
@@ -29,13 +29,13 @@ function get_dataset(test_set, use_jittering)
     parent_path = './GTSRB/Final_Training/Images'
   end
 
-  local image_directories = dir.getdirectories(parent_path)
+  local image_directories = dirx.getdirectories(parent_path)
 
   for image_dir_nbr, image_directory in ipairs(image_directories) do
-    local csv_file_name = 'GT-' .. path.basename(image_directory) .. '.csv'
-    local csv_file_path = path.join(image_directory, csv_file_name)
+    local csv_file_name = 'GT-' .. pathx.basename(image_directory) .. '.csv'
+    local csv_file_path = pathx.join(image_directory, csv_file_name)
 
-    local csv_content = data.read(csv_file_path)
+    local csv_content = datax.read(csv_file_path)
 
     local filename_index = csv_content.fieldnames:index('Filename')
     local class_id_index = csv_content.fieldnames:index('ClassId')
@@ -54,7 +54,7 @@ function get_dataset(test_set, use_jittering)
     else
       local max_track_nbr = 0
       for image_index, image_metadata in ipairs(csv_content) do
-        local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
+        local track_nbr = tonumber(utilsx.split(image_metadata[filename_index], '_')[1])
         if track_nbr > max_track_nbr then
           max_track_nbr = track_nbr
         end
@@ -64,8 +64,8 @@ function get_dataset(test_set, use_jittering)
     end
 
     for image_index, image_metadata in ipairs(csv_content) do
-      local track_nbr = tonumber(utils.split(image_metadata[filename_index], '_')[1])
-      local image_path = path.join(image_directory, image_metadata[filename_index])
+      local track_nbr = tonumber(utilsx.split(image_metadata[filename_index], '_')[1])
+      local image_path = pathx.join(image_directory, image_metadata[filename_index])
       local image_data = torch.Tensor(image.load(image_path, 3, double))
       local original_image = image_data:clone()
 
@@ -126,3 +126,8 @@ function get_dataset(test_set, use_jittering)
     return train_dataset, val_dataset
   end
 end
+
+
+return {
+  get_dataset = get_dataset
+}

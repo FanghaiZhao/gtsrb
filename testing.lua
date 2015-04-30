@@ -1,7 +1,7 @@
-local torch = require 'torch'
+require 'torch'
 
 
-function test_network(cnn, dataset)
+local test_network = function(cnn, dataset)
 
   local nbr_elements = 0
   local nbr_false = 0
@@ -24,3 +24,8 @@ function test_network(cnn, dataset)
   print('Error rate on the given set is: ' .. nbr_false/nbr_elements .. '.')
 
 end
+
+
+return {
+  test_network = test_network
+}

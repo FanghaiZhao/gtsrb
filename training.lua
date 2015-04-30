@@ -1,7 +1,7 @@
 require 'nn'
 
 
-function train_network(cnn, dataset)
+local train_network = function(cnn, dataset)
   local criterion = nn.CrossEntropyCriterion()
   local trainer = nn.StochasticGradient(cnn, criterion)
 
@@ -10,3 +10,7 @@ function train_network(cnn, dataset)
   trainer:train(dataset)
 
 end
+
+return {
+  train_network = train_network
+}

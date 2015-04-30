@@ -1,7 +1,7 @@
 require 'nn'
 
 
-function get_network()
+local get_network = function()
   local cnn = nn.Sequential()
 
   -- TODO use one of the improved architectures
@@ -23,3 +23,7 @@ function get_network()
 
   return cnn
 end
+
+return {
+  get_network = get_network
+}

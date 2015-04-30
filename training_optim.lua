@@ -3,7 +3,7 @@ require 'optim'
 require 'xlua'
 
 
-function train_network(cnn, dataset)
+local train_network = function(cnn, dataset)
   local criterion = nn.CrossEntropyCriterion()
 
   -- get the flattened parameters
@@ -94,3 +94,8 @@ function train_network(cnn, dataset)
   end
 
 end
+
+
+return {
+  train_network = train_network
+}
