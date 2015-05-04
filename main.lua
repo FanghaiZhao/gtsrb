@@ -2,6 +2,7 @@ local dataset = require 'dataset'
 local network = require 'network'
 local training = require 'training_optim'
 local testing = require 'testing'
+local matching = require 'matching'
 
 local pathx = require 'pl.path'
 require 'torch'
@@ -15,7 +16,7 @@ if pathx.exists('train_dataset.bin') and pathx.exists('val_dataset.bin') then
   train_dataset = torch.load('train_dataset.bin')
   val_dataset = torch.load('val_dataset.bin')
 else
-  train_dataset, val_dataset = dataset.get_dataset(false, false, true)
+  train_dataset, val_dataset = dataset.get_dataset(false, true, false)
   torch.save('train_dataset.bin', train_dataset)
   torch.save('val_dataset.bin', val_dataset)
 end
@@ -41,7 +42,7 @@ if pathx.exists('model.bin') then
 else
   cnn = network.get_network_multiscale()
   print('Training network.')
-  training.train_network(cnn, train_dataset)
+  training.train_network(cnn, train_dataset, val_dataset)
 
   print('Saving network.')
   torch.save('model.bin', cnn)
@@ -50,3 +51,4 @@ end
 
 print('Testing network.')
 testing.test_network(cnn, test_dataset)
+matching.test_matching(cnn, 4, test_dataset)

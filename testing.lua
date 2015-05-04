@@ -21,7 +21,7 @@ local test_network = function(cnn, dataset)
 
   end
 
-  print('Error rate on the given set is: ' .. nbr_false/nbr_elements .. '.')
+  print('Error rate of the network on the given set is: ' .. nbr_false/nbr_elements .. '.')
 
 end
 

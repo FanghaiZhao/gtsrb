@@ -2,8 +2,10 @@ require 'nn'
 require 'optim'
 require 'xlua'
 
+local testing = require 'testing'
 
-local train_network = function(cnn, dataset)
+
+local train_network = function(cnn, training_set, validation_set)
   local criterion = nn.CrossEntropyCriterion()
 
   -- get the flattened parameters
@@ -14,12 +16,12 @@ local train_network = function(cnn, dataset)
   for i=1,43 do classes[i] = i end
   confusion = optim.ConfusionMatrix(classes)
 
-  optimization_method = 'SGD'
+  optimization_method = 'CG'
 
   local optimState
   if optimization_method == 'CG' then
     optimState = {
-      maxIter = 2
+      maxIter = 20
     }
     optimMethod = optim.cg
 
@@ -33,15 +35,15 @@ local train_network = function(cnn, dataset)
 
   elseif optimization_method == 'SGD' then
     optimState = {
-      learningRate = 0.01,
+      learningRate = 0.1,
       weightDecay = 0,
-      momentum = 0,
-      learningRateDecay = 0
+      momentum = 0.5,
+      learningRateDecay = 0.001
     }
     optimMethod = optim.sgd
   end
   
-  nbr_epoch = 10
+  nbr_epoch = 2
   batch_size = 100
 
   cnn:training()
@@ -50,16 +52,16 @@ local train_network = function(cnn, dataset)
     collectgarbage()
     print('Doing epoch ' .. epoch .. ' with batch of size ' .. batch_size)
 
-    shuffle = torch.randperm(dataset:size())
+    shuffle = torch.randperm(training_set:size())
 
-    for t = 1, dataset:size(), batch_size do
-      xlua.progress(t, dataset:size())
+    for t = 1, training_set:size(), batch_size do
+      xlua.progress(t, training_set:size())
       -- generate batch
       local inputs = {}
       local targets = {}
-      for i = t,math.min(t+batch_size-1,dataset:size()) do
-        local input = dataset[shuffle[i]][1]
-        local target = dataset[shuffle[i]][2]
+      for i = t,math.min(t+batch_size-1,training_set:size()) do
+        local input = training_set[shuffle[i]][1]
+        local target = training_set[shuffle[i]][2]
         table.insert(inputs, input)
         table.insert(targets, target)
       end
@@ -91,6 +93,8 @@ local train_network = function(cnn, dataset)
 
       optimMethod(feval, parameters, optimState)
     end
+
+    testing.test_network(cnn, validation_set)
   end
 
 end
