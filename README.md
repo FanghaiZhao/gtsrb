@@ -1,15 +1,32 @@
+<<<<<<< HEAD
 # German Traffic Sign Recognition Benchmark
+=======
+# GTSRB Challenge
+
+a.k.a German Traffic Sign Recognition Benchmark :de: :no_entry: :no_bicycles:
+:no_entry_sign: ...
+>>>>>>> init
 
 ## Goal
 
 Use [Torch](http://torch.ch/) to train and evaluate a 2-stage convolutional
 neural network able to classify German traffic sign images (43 classes):
 
+<<<<<<< HEAD
 * create a branch,
 * create an issue describing your approach,
 * report your result(s),
 * commit your code,
 * add a README for pre-requisites and usage.
+=======
+* fork the repository under your account,
+* create an issue describing your approach,
+* report your result(s),
+* commit your code,
+* add a README for pre-requisites and usage,
+* boost accuracy by experimenting the multi-scale architecture,
+* compare with the results obtained in matching mode (i.e use the features with a distance-based search).
+>>>>>>> init
 
 ## Paper
 
@@ -24,6 +41,7 @@ neural network able to classify German traffic sign images (43 classes):
 ### Testing
 
 `http://benchmark.ini.rub.de/Dataset/GTSRB_Final_Test_Images.zip` (84 MB)
+<<<<<<< HEAD
 
 
 
@@ -81,3 +99,6 @@ We then create a function that, given a set of parameters  return the loss and i
 The module is then doing the update of the parameters using one of the methods listed above.
 This step is repeated for all batches and the desired number of epochs.
 
+=======
+`http://benchmark.ini.rub.de/Dataset/GTSRB_Final_Test_GT.zip` (98 kB)
+>>>>>>> init
