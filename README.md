@@ -41,12 +41,14 @@ Some part of the code should be refactored and command line argument should be u
 ## Usage
 
 * Data
+
 Download the data and decompress them in the GTSRB at the root folder of this project.
 There should be the Final_Training and Final_Test folders in THIS_REPO/GTSRB/
 The Final_training does no need to be modified. For the Final_Test, you need to put the content of Final_Test/Images/* in Final_Test/Images/final_test/* . You also need to extract the ground truth csv and put it in Final_Test/Images/final_test/GT-final_test.csv .
 
 * Run the code
-You can use the main module with '''time th main.lua''' .
+
+You can use the main module with ```time th main.lua``` .
 All the parameters are directly specified in the corresponding module.
 
 ## Modules
